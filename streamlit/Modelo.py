@@ -113,15 +113,15 @@ def get_clinic_input(): # Coletar os dados do questionario
     col1, col2 = st.columns(2)
     
     with col1:
-        idade = st.number_input("Idade", min_value=7.00, max_value=27.00, value=15.00)
-        peso = st.number_input("Fase", min_value=0, max_value=9, value=5)
+        idade = st.number_input("Idade", min_value=7, max_value=27, value=15)
+        fase = st.number_input("Fase", min_value=0, max_value=9, value=5)
     
     with col2:
         altura = st.number_input("Altura (m)", min_value=1.0, max_value=2.5, value=1.70)
         sexo = st.selectbox("Gênero", setup_options(["Masculino", "Feminino"]))
 
     # Normalização da informação de gênero
-    genero = 1 if sexo == "Feminino" else 0
+    GENERO = 1 if sexo == "Feminino" else 0
 
     # Cálculo de IMC
     imc = int(np.ceil(peso / (altura ** 2)))
