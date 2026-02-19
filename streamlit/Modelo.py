@@ -1,5 +1,5 @@
 # ==========================================================================
-# Importe de bibliotecas
+# Import de bibliotecas
 # ==========================================================================
 
 # Bibliotecas do Sistema e Utilitários
@@ -22,7 +22,7 @@ import streamlit as st          # Framework para criação de dashboards e apps 
 # Config página
 # ==========================================================================
 st.set_page_config(
-    page_title="Modelo de Predição sobre o risto de defasagem dos alunos da ong Passos Mágicos", # Define o nome na aba do navegador.
+    page_title="Modelo de Predição sobre o risco de defasagem dos alunos da ong Passos Mágicos", # Define o nome na aba do navegador.
     page_icon="🎯", # Define o emoji que aparece na aba.
     layout="wide" # Define que o conteúdo do site ficará centralizado na tela.
 )
@@ -101,6 +101,16 @@ def config_page(): # Configurar menu lateral
             </a>
         """, unsafe_allow_html=True)
 
+def classificar_nivel_risco(prob):
+    """Classifica o nível de risco baseado na probabilidade"""
+    if prob < 0.30:
+        return 'Sem Risco', '✅', 'risk-low'
+    elif prob < 0.60:
+        return 'Atenção', '⚡', 'risk-attention'
+    elif prob < 0.85:
+        return 'Risco Moderado', '⚠️', 'risk-moderate'
+    else:
+        return 'Risco Alto', '🚨', 'risk-high'
 
 def get_clinic_input(): # Coletar os dados do questionario
     """
@@ -108,234 +118,85 @@ def get_clinic_input(): # Coletar os dados do questionario
     """
     # DADOS PESSOAIS
     st.header("1. Informações Pessoais")
-    st.markdown("Preencha os campos abaixo para verificar o **nível de defasagem do aluno**.")
+    st.markdown("Preencha os campos abaixo para verificar o **nível de defasagem do aluno**. (Obrigatório)" )
     
     col1, col2 = st.columns(2)
     
     with col1:
         idade = st.number_input("Idade", min_value=7, max_value=27, value=15)
-        fase = st.number_input("Fase", min_value=0, max_value=9, value=5)
+        fase = st.number_input("Fase Atual", min_value=0, max_value=9, value=5)
     
     with col2:
-        altura = st.number_input("Altura (m)", min_value=1.0, max_value=2.5, value=1.70)
-        sexo = st.selectbox("Gênero", setup_options(["Masculino", "Feminino"]))
+        genero = st.selectbox("Gênero", setup_options(["Masculino", "Feminino"]))
+        fase_ideal = st.number_input("Fase Ideal", min_value=0, max_value=8, value=5)
 
-    # Normalização da informação de gênero
-    GENERO = 1 if sexo == "Feminino" else 0
 
-    # Cálculo de IMC
-    imc = int(np.ceil(peso / (altura ** 2)))
+    instituicao_opcoes = {
+            "Pública": "Pública",
+            "Privada": "Privada",
+            "Privada - Programa de Apadrinhamento": "Privada - Programa de Apadrinhamento",
+            "Privada com Bolsa 100%": "Privada *Parcerias com Bolsa 100%",
+               "Privada - Empresa Parceira": "Privada - Pagamento por *Empresa Parceira",
+               "Escola JP II": "Escola JP II",
+               "Rede Decisão": "Rede Decisão",
+               "Bolsista Universitário (Formado)": "Bolsista Universitário *Formado (a)",
+               "Concluiu o 3º EM": "Concluiu o 3º EM",
+               "Desconhecido": "Desconhecido",
+               "Nenhuma das opções acima": "Nenhuma das opções acima"
+           }
+    instituicao_display = st.selectbox("Instituição de Ensino", list(instituicao_opcoes.keys()))
+    instituicao = instituicao_opcoes[instituicao_display]
+ 
+    # Cálculo de defasagem
+    defasagem = int(np.ceil(fase - fase_ideal))
 
-    if imc < 18.5:
-        base_imc = 'Abaixo do peso'
+    if defasagem < -2:
+        base_defasagem = 'Severo'
 
-    elif imc >= 18.5 and imc <= 24.9:
-        base_imc = 'Peso normal'
-
-    elif imc >= 25.0 and imc <= 29.9:
-        base_imc = 'Sobrepeso'
-
-    elif imc >= 30.0 and imc <= 34.9:
-        base_imc = 'Obesidade grau I'
-
-    elif imc >= 35.0 and imc <= 39.9:
-        base_imc = 'Obesidade grau II'
+    elif defasagem >= -2 and defasagem <= 0:
+        base_defasagem = 'Moderado'
 
     else:
-        base_imc = 'Obesidade grau III'
+        base_defasagem = 'Em Fase'
 
-    st.info(f"🎛️ **IMC do paciênte é de:** {imc} kg/m² ({base_imc})")
     st.markdown("---")
 
     # HISTÓRICO E HÁBITOS
-    st.header("2.  Estilo de vida e hábitos alimentares")
-    st.markdown("Preencha os campos abaixo para que seja realizada a previsão.")
+    st.header("2. Indicadores PEDE")
+    st.markdown("Preencha os campos abaixo para que seja realizada a previsão. (Obrigatório)")
     
-    option_map = {
-        'Sim': "Sim",
-        'Não': "Não"
-    }
-
-    mapa_refeicoes = {
-        '1': 'uma_refeicao_por_dia',
-        '2': 'duas_refeicoes_por_dia',
-        '3': 'tres_refeicoes_por_dia',
-        '4+': 'maior_que_tres_refeicoes_por_dia'
-    }
-
-    mapa_vegetais = {
-        'Raramente': 'raramente', 
-        'Às vezes': 'as_vezes', 
-        'Sempre': 'sempre'
-    }
-
-    mapa_agua = {
-        '< 1 Litro': 'baixa', 
-        '1-2 Litros': 'moderada', 
-        '> 2 Litros': 'alta'
-    }
-
-    mapa_entre_refeicoes = {
-        'Nunca': 'nunca', 
-        'Às vezes': 'baixa', 
-        'Frequentemente': 'moderada', 
-        'Sempre': 'alta'
-    }
-
-    mapa_alcool = {
-        'Nunca': 'nunca', 
-        'Às vezes': 'baixa', 
-        'Frequentemente': 'moderada', 
-        'Sempre': 'alta'
-    }
-
-    mapa_ativdade = {
-        'Sedentário': 'sedentario', 
-        'Baixa': 'baixa', 
-        'Moderada': 'moderada', 
-        'Alta': 'alta'
-    }
-    mapa_internet = {
-        'Baixa': 'baixa', 
-        'Moderada': 'moderada', 
-        'Alta': 'alta'
-    }
-    mapa_transporte = {
-        'Transporte Público': 'transporte_publico', 
-        'Caminhada': 'caminhada', 
-        'Carro': 'carro', 
-        'Bicicleta': 'bicicleta', 
-        'Moto': 'moto'
-    }
-
     col_h1, col_h2 = st.columns(2)
     
     with col_h1:
-        
-        historico_familiar = st.pills(
-        "Possui histórico familiar de sobrepeso?",
-        options=option_map.keys(),
-        format_func=lambda option: option_map[option],
-        selection_mode="single",
-        default='Sim' 
-        )
-        
-        fuma = st.pills(
-        "Você é fumante ou ex-fumante?",
-        options=option_map.keys(),
-        format_func=lambda option: option_map[option],
-        selection_mode="single",
-        default='Sim' 
-        )
-        
-        consumo_alimentos_altamente_caloricos = st.pills(
-        "Consome alimentos calóricos frequentemente?",
-        options=option_map.keys(),
-        format_func=lambda option: option_map[option],
-        selection_mode="single",
-        default='Sim' 
-        )
-    
-        
-        monitoramento_calorias = st.pills(
-        "Costuma contabilizar as calorias ingeridas?",
-        options=option_map.keys(),
-        format_func=lambda option: option_map[option],
-        selection_mode="single",
-        default='Não' 
-        )
-        
-        refeicao_selecionada = st.pills(
-        "Quantas refeições principais faz por dia?",
-        options=list(mapa_refeicoes.keys()), 
-        selection_mode="single",
-        default='1'
-        )
+        ipv_escrito = st.selectbox("IPV (Ponto de Virada)", setup_options(["Sim", "Não"]))
+        ipv = st.slider("IPV (Ponto de Virada)", 0.0, 10.0, 7.0, 0.1)
+        ida = st.slider("IDA (Desempenho Acadêmico)", 0.0, 10.0, 6.5, 0.1)
+        ieg = st.slider("IEG (Engajamento)", 0.0, 10.0, 7.0, 0.1)
 
-        vegetal_selecionada = st.pills(
-        "Costuma comer vegetais?",
-        options=list(mapa_vegetais.keys()), 
-        selection_mode="single",
-        default='Raramente'
-        )
     
     with col_h2:
-        
-        agua_selecionada = st.pills(
-        "Consumo diário de água?",
-        options=list(mapa_agua.keys()), 
-        selection_mode="single",
-        default='< 1 Litro'
-        )
-        
-        alimentacao_entre_refeicoes_selecionada = st.pills(
-        "Costuma comer entre as refeições?",
-        options=list(mapa_entre_refeicoes.keys()), 
-        selection_mode="single",
-        default='Nunca' 
-        )
-    
-        alcool_selecionada = st.pills(
-        "Costuma beber bebidas alcoólicas?",
-        options=list(mapa_alcool.keys()), 
-        selection_mode="single",
-        default='Nunca' 
-        )
-
-        atividade_fisica_selecionada = st.pills(
-        "Pratica atividade física?",
-        options=list(mapa_ativdade.keys()), 
-        selection_mode="single",
-        default='Sedentário'
-        )
-
-        tecnologia_selecionada = st.pills(
-        "Tempo diário em dispositivos eletrônicos?",
-        options=list(mapa_internet.keys()), 
-        selection_mode="single",
-        default='Baixa'
-        )
-
-        meio_de_transporte_selecionada = st.pills(
-        "Meio de transporte principal?",
-        options=list(mapa_transporte.keys()), 
-        selection_mode="single",
-        default='Transporte Público'
-        )
-    
-    # Normalização das respostas
-    historico_familiar = 1 if historico_familiar == "Sim" else 0
-    fuma = 1 if fuma == "Sim" else 0
-    consumo_alimentos_altamente_caloricos = 1 if consumo_alimentos_altamente_caloricos == "Sim" else 0
-    monitoramento_calorias = 1 if monitoramento_calorias == "Sim" else 0
-    consumo_refeicoes_principais = mapa_refeicoes[refeicao_selecionada]
-    consumo_vegetais = mapa_vegetais[vegetal_selecionada]
-    consumo_agua = mapa_agua[agua_selecionada]
-    consumo_lanches_entre_refeicoes = mapa_entre_refeicoes[alimentacao_entre_refeicoes_selecionada]
-    consumo_alcool = mapa_alcool[alcool_selecionada]
-    frequencia_atividade_fisica = mapa_ativdade[atividade_fisica_selecionada]
-    tempo_uso_tecnologia = mapa_internet[tecnologia_selecionada]
-    meio_de_transporte = mapa_transporte[meio_de_transporte_selecionada]
-
-    
+        pedra = st.selectbox("Pedra", setup_options(['QUARTZO', 'AGATA', 'AMETISTA', 'TOPAZIO']))
+        ips = st.slider("IPS (Psicossocial)", 0.0, 10.0, 6.0, 0.1)
+        iaa = st.slider("IAA (Autoavaliação)", 0.0, 10.0, 7.0, 0.1)
+        ipp = st.slider("IPP (Potencial Psicopedagógico)", 0.0, 10.0, 7.0, 0.1)
+   
     st.markdown("---")
 
     data = {
-        'idade': idade,
-        'genero': genero,
-        'consumo_refeicoes_principais': consumo_refeicoes_principais,
-        'consumo_vegetais': consumo_vegetais,
-        'consumo_agua': consumo_agua,
-        'frequencia_atividade_fisica': frequencia_atividade_fisica,
-        'tempo_uso_tecnologia': tempo_uso_tecnologia,
-        'fuma': fuma,
-        'consumo_alimentos_altamente_caloricos': consumo_alimentos_altamente_caloricos,
-        'monitoramento_calorias': monitoramento_calorias,
-        'historico_familiar': historico_familiar,
-        'consumo_lanches_entre_refeicoes': consumo_lanches_entre_refeicoes,
-        'consumo_alcool': consumo_alcool,
-        'meio_de_transporte': meio_de_transporte,
-        'imc': imc
+        'IDADE': idade,
+        'GENERO': genero,
+        'IDA': ida,
+        'IEG': ieg,
+        'IAA': iaa,
+        'IPS': ips,
+        'PONTO_VIRADA': ipv_escrito,
+        'PEDRA': pedra,
+        'DEFASAGEM': defasagem,
+        'FASE': fase,
+        'FASE_IDEAL': fase_ideal,
+        'IPP': ipp,
+        'IPV': ipv,
+        'INSTITUICAO_ENSINO': instituicao
     }
     
     return pd.DataFrame(data, index=[0])
@@ -349,10 +210,10 @@ def main(): # Função princial
     model = load_model()
 
     # 3. Página do cálculo predição
-    st.caption("🏥 MedAnalytics | Gestão de Saúde <sup>1</sup>", unsafe_allow_html=True)
-    st.title("🎯 Modelo de Predição | Risco de Obesidade")
+    st.caption("🏥 PEDE Analytics | Ong Passos Mágicos <sup>1</sup>", unsafe_allow_html=True)
+    st.title("🎯 Modelo de Predição | Risco de Defasagem")
     st.markdown("""
-    Preencha o formulário a seguir para que o modelo calcule a probabilidade do risco de obesidade do paciente.
+    Preencha o formulário a seguir para que o modelo calcule a probabilidade do risco de defasagem dos alunos.
     """)
     st.markdown("---")
 
@@ -362,11 +223,11 @@ def main(): # Função princial
     # 5. Botão e Predição
     st.markdown("###")
     
-    if st.button("🎯 Clique aqui para saber a previsão", type="primary", use_container_width=True):
+    if st.button("🎯 Clique aqui para fazer a previsão", type="primary", use_container_width=True):
         if model is not None:
             try:
                     # --- INÍCIO DA BARRA DE PROGRESSO ---
-                progress_text = "Analisando dados do paciente. Por favor, aguarde..."
+                progress_text = "Analisando dados do aluno. Por favor, aguarde..."
                 my_bar = st.progress(0, text=progress_text)
 
                 for percent_complete in range(100):
@@ -379,19 +240,26 @@ def main(): # Função princial
 
                 prediction = model.predict(input_df)
                 probability = model.predict_proba(input_df)
+                prob_risco = probability[0][1]*100
 
                 st.markdown("---")
                 st.header("Resultado da Análise")
 
-                if prediction[0] == 1:
-                    st.error("🚨 **ALTO RISCO DE OBESIDADE**")
-                    st.metric(label="A probabilidade do paciente se tornar obeso futuramente é de:", value=f"{probability[0][1] * 100:.1f}%")
-                    st.warning("💭 **Recomendação:** Sugere-se encaminhamento para orientação médica e nutricional além de realizar ajustes no estilo de vida.")
+                if prob_risco >= 51:
+                    st.error(f"🚨 **ALTO RISCO DE DEFASAGEM**")
+                    st.metric(label="A probabilidade do aluno ficar defasado futuramente é de:", value=f"{probability[0][1] * 100:.1f}%")
+                    st.warning("💭 **Recomendação:** Aluno necessita de plano de recuperação imediato e reunião com responsáveis.")
+
+                elif prob_risco == 50:
+                    st.warning(f"⚠️ **MÉDIO RISCO**")
+                    st.metric(label="A probabilidade do aluno ficar defasado futuramente é de:", value=f"{probability[0][1] * 100:.1f}%")
+                    st.info("💭 **Recomendação:** Sugere-se monitoramento semanal e oferta de aulas de reforço em contraturno.")
+
                 else:
-                    st.success("🥳 **BAIXO RISCO DE OBESIDADE**")
-                    st.metric(label="Probabilidade de Risco", value=f"{probability[0][1] * 100:.1f}%")
-                    st.info("💭 **Recomendação:** Continar mantendo hábitos saudáveis e realizar acompanhamento médico periódico.")
-            
+                    st.success(f"🥳 **BAIXO RISCO DE DEFASAGEM**")
+                    st.metric(label="A probabilidade do aluno ficar defasado futuramente é de:", value=f"{probability[0][1] * 100:.1f}%")
+                    st.info("💭 **Recomendação:** O aluno demonstra forte engajamento e resultados sólidos. Manter acompanhamento regular.")
+
             except Exception as e:
                 st.error(f"Ocorreu um erro técnico ao realizar a predição: {e}")
         else:
@@ -401,6 +269,6 @@ def main(): # Função princial
 
     # Adiciona o crédito final da aplicação centralizado no rodapé
     st.caption("Projeto do curso de Pós Graduação de Data Analytics da FIAP.")
-    st.caption("* MedAnalytics | Gestão de Saúde é um nome fictício utilizado para fins estritamente acadêmicos.")
+    st.caption("* PEDE analytics | Ong Passos Mágicos é um nome fictício utilizado para fins estritamente acadêmicos.")
 if __name__ == "__main__":
     main()
