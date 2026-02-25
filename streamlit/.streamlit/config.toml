@@ -1,0 +1,19 @@
+[theme]
+# Cor principal (Botões, Sliders, Checkboxes) - Verde Água do Set2
+primaryColor = "#66c2a5"
+
+# Cor de fundo da área principal
+backgroundColor = "#ffffff"
+
+# Cor de fundo da barra lateral e caixas de input
+secondaryBackgroundColor = "#f8f9fb"
+
+# Cor do texto principal
+textColor = "#2d2d2d"
+
+# Fonte padrão
+font = "sans serif"
+
+[server]
+# Remove o menu de opções e o rodapé padrão do Streamlit para um visual mais limpo
+headless = true
