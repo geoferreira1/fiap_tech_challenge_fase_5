@@ -139,5 +139,5 @@ O dashboard interativo com as análises e indicadores pode ser acessado através
 
 ---
 
-## 👨‍💻 Autor: 
+## 👨‍💻 Autor
   - [Geovane Ferreira](https://www.linkedin.com/in/geovaneferreira/)
