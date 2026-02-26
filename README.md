@@ -110,6 +110,31 @@ O dashboard interativo com as análises e indicadores pode ser acessado através
 
 ## 📂 Estrutura do Repositório
 
+```
+├── data_raw/
+│   ├── base_passos_magicos.xls                # Base bruta original
+│   └── desvendando_passos.pdf                 # Referência técnica das variáveis
+│   └── desvendando_passos.pdf                 # Referência técnica das variáveis
+│   └── Dicionário Dados Datathon.pdf          # Referência técnica das variáveis
+│   └── Links adicionais da passos.docx        # Referência técnica das variáveis
+│   └── PEDE_ Pontos importantes.docx          # Referência técnica das variáveis
+│   └── Relatório PEDE2020.pdf                 # Referência técnica das variáveis
+│   └── Relatório PEDE2021.pdf                 # Referência técnica das variáveis
+│   └── Relatório PEDE2022.pdf                 # Referência técnica das variáveis
+├── data_processed/
+│   └── df_unificado.csv                       # Base tratada após ETL
+├── models/
+│   └── modelo_final_gradient_boosting.joblib  # Pipeline de ML pronto para produção
+├── notebook/
+│   └── fiap_tech_challenge_fase_5.ipynb       # Documentação do experimento (Notebook)
+├── streamlit/
+│   ├── pages/
+│   │   └── Dashboard.py                       # Dashboard fo projeto / Visão Analítica (Streamlit)
+│   └── Modelo.py                              # Interface de Predição (Streamlit)
+├── requirements.txt                           # Dependências do ecossistema
+└── README.md                                  # Documentação do projeto
+```
+
 ---
 
 ## 👨‍💻 Autor: 
