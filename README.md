@@ -9,7 +9,7 @@ esse desafio também traz o desafio do desenvolvimento de um modelo preditivo.
 
 ## 🎯 O Desafio
 
-O projeto visa transformar os dados históricos da associação em insights acionáveis para coordenadores e investidores, focando em:
+O projeto visa transformar os dados históricos da associação em insights acionáveis para coordenadores, focando em:
 
 1.  **Visão Analítica:** Um dashboard interativo para monitorar a evolução dos alunos (PED, IAN, IDA, IEG) ao longo dos anos.
 2.  **Métricas de Desempenho:** Identificação de alunos que precisam de maior suporte e análise de correlação entre o engajamento (IEG) e o desempenho acadêmico (IDA).
@@ -34,12 +34,12 @@ Todas as etapas do projeto foram disponibilizadas no arquivo `fiap_tech_challeng
 
 ## 📈 Performance do Modelo
 
-O modelo **GradientBoostingClassifier** foi selecionado visando o foco na segurança do paciente e assertividade diagnóstica:
+O modelo **GradientBoostingClassifier** foi selecionado visando o foco na assertividade diagnóstica:
 
 | Métrica | Valor | Importância para o Negócio |
 | :--- | :--- | :--- |
 | **Acurácia** | ~98% | Assertividade geral do sistema. |
-| **Recall (Sensibilidade)** | 97% | Garante que pacientes em risco real sejam identificados. |
+| **Recall (Sensibilidade)** | 97% | Garante que alunos em risco real sejam identificados. |
 | **F1-Score** | 98% | Equilíbrio ideal entre precisão e sensibilidade. |
 
 ---
