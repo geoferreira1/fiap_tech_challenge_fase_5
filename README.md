@@ -22,7 +22,7 @@ O projeto visa transformar os dados históricos da associação em insights acio
   <img src="https://github.com/user-attachments/assets/79c985a1-ff10-4afd-be47-6bf70d0dd01b">
 </p>
 
-### Pipeline de Desenvolvimento
+## Pipeline de Desenvolvimento
 Todas as etapas do projeto foram disponibilizadas no arquivo `fiap_tech_challenge_fase_5.ipynb`, abrangendo:
 
 * **ETL & Data Cleaning:** Tratamento de ruídos em variáveis categóricas e numéricas, além tradução completa dos labels para Português (PT-BR).
@@ -99,9 +99,11 @@ Esta análise demonstra que:
 ✔ A metodologia da ONG é validada por dados
 
 ✨ A Passos Mágicos não apenas melhora indicadores, mas também transforma trajetórias de vida de forma estruturada e mensurável.
+
 ---
 
-### 🖥️ Streamlit
+## 🖥️ Streamlit
+
 O dashboard interativo com as análises e indicadores pode ser acessado através do link abaixo:
 
 🪄 [Painel de Impacto Passos Mágicos](https://ong-pmagicos-fiaptechchallengefase5-datathon.streamlit.app/)
