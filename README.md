@@ -9,7 +9,7 @@ esse desafio também traz o desafio do desenvolvimento de um modelo preditivo.
 
 ## 🎯 O Desafio
 
-O projeto visa transformar os dados históricos da associação em insights acionáveis para coordenadores e investidores, focando em:
+O projeto visa transformar os dados históricos da associação em insights acionáveis para coordenadores, focando em:
 
 1.  **Visão Analítica:** Um dashboard interativo para monitorar a evolução dos alunos (PED, IAN, IDA, IEG) ao longo dos anos.
 2.  **Métricas de Desempenho:** Identificação de alunos que precisam de maior suporte e análise de correlação entre o engajamento (IEG) e o desempenho acadêmico (IDA).
@@ -22,7 +22,7 @@ O projeto visa transformar os dados históricos da associação em insights acio
   <img src="https://github.com/user-attachments/assets/79c985a1-ff10-4afd-be47-6bf70d0dd01b">
 </p>
 
-### Pipeline de Desenvolvimento
+## Pipeline de Desenvolvimento
 Todas as etapas do projeto foram disponibilizadas no arquivo `fiap_tech_challenge_fase_5.ipynb`, abrangendo:
 
 * **ETL & Data Cleaning:** Tratamento de ruídos em variáveis categóricas e numéricas, além tradução completa dos labels para Português (PT-BR).
@@ -34,12 +34,12 @@ Todas as etapas do projeto foram disponibilizadas no arquivo `fiap_tech_challeng
 
 ## 📈 Performance do Modelo
 
-O modelo **GradientBoostingClassifier** foi selecionado visando o foco na segurança do paciente e assertividade diagnóstica:
+O modelo **GradientBoostingClassifier** foi selecionado visando o foco na assertividade diagnóstica:
 
 | Métrica | Valor | Importância para o Negócio |
 | :--- | :--- | :--- |
 | **Acurácia** | ~98% | Assertividade geral do sistema. |
-| **Recall (Sensibilidade)** | 97% | Garante que pacientes em risco real sejam identificados. |
+| **Recall (Sensibilidade)** | 97% | Garante que alunos em risco real sejam identificados. |
 | **F1-Score** | 98% | Equilíbrio ideal entre precisão e sensibilidade. |
 
 ---
@@ -99,9 +99,11 @@ Esta análise demonstra que:
 ✔ A metodologia da ONG é validada por dados
 
 ✨ A Passos Mágicos não apenas melhora indicadores, mas também transforma trajetórias de vida de forma estruturada e mensurável.
+
 ---
 
-### 🖥️ Streamlit
+## 🖥️ Streamlit
+
 O dashboard interativo com as análises e indicadores pode ser acessado através do link abaixo:
 
 🪄 [Painel de Impacto Passos Mágicos](https://ong-pmagicos-fiaptechchallengefase5-datathon.streamlit.app/)
@@ -110,7 +112,32 @@ O dashboard interativo com as análises e indicadores pode ser acessado através
 
 ## 📂 Estrutura do Repositório
 
+```
+├── data_raw/
+│   ├── base_passos_magicos.xls                # Base bruta original
+│   └── desvendando_passos.pdf                 # Referência técnica das variáveis
+│   └── desvendando_passos.pdf                 # Referência técnica das variáveis
+│   └── Dicionário Dados Datathon.pdf          # Referência técnica das variáveis
+│   └── Links adicionais da passos.docx        # Referência técnica das variáveis
+│   └── PEDE_ Pontos importantes.docx          # Referência técnica das variáveis
+│   └── Relatório PEDE2020.pdf                 # Referência técnica das variáveis
+│   └── Relatório PEDE2021.pdf                 # Referência técnica das variáveis
+│   └── Relatório PEDE2022.pdf                 # Referência técnica das variáveis
+├── data_processed/
+│   └── df_unificado.csv                       # Base tratada após ETL
+├── models/
+│   └── modelo_final_gradient_boosting.joblib  # Pipeline de ML pronto para produção
+├── notebook/
+│   └── fiap_tech_challenge_fase_5.ipynb       # Documentação do experimento (Notebook)
+├── streamlit/
+│   ├── pages/
+│   │   └── Dashboard.py                       # Dashboard fo projeto / Visão Analítica (Streamlit)
+│   └── Modelo.py                              # Interface de Predição (Streamlit)
+├── requirements.txt                           # Dependências do ecossistema
+└── README.md                                  # Documentação do projeto
+```
+
 ---
 
-## 👨‍💻 Autor: 
+## 👨‍💻 Autor
   - [Geovane Ferreira](https://www.linkedin.com/in/geovaneferreira/)
